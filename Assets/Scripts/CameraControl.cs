@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
@@ -13,7 +10,7 @@ public class CameraControl : MonoBehaviour
     public float xCursor = 0f;
     public float yCursor = 2f;
     private Vector3 distanceVector;
-    Movement player;
+    Player player;
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +20,7 @@ public class CameraControl : MonoBehaviour
         xCursor = angles.x;
         xCursor = angles.y;
 
-        this.Rotate(xCursor, yCursor);
+        Rotate(xCursor, yCursor);
     }
 
     // Update is called once per frame
@@ -35,7 +32,7 @@ public class CameraControl : MonoBehaviour
             xCursor += Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
             yCursor -= Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
 
-            this.Rotate(xCursor, yCursor);
+            Rotate(xCursor, yCursor);
         }
         //right clic
         if (Input.GetMouseButton(1))
@@ -43,18 +40,18 @@ public class CameraControl : MonoBehaviour
             xCursor += Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
             yCursor -= Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
 
-            this.Rotate(xCursor, yCursor);
+            Rotate(xCursor, yCursor);
 
             player.transform.rotation = Quaternion.Euler(0.0f, xCursor, 0.0f);
         }
         //mouse wheel
         if (Input.GetAxis("Mouse ScrollWheel") < 0.0f)
         {
-            this.ZoomOut(Input.GetAxis("Mouse ScrollWheel"));
+            ZoomOut(Input.GetAxis("Mouse ScrollWheel"));
         }
         else if (Input.GetAxis("Mouse ScrollWheel") > 0.0f)
         {
-            this.ZoomIn(Input.GetAxis("Mouse ScrollWheel"));
+            ZoomIn(Input.GetAxis("Mouse ScrollWheel"));
         }
     }
 
@@ -86,7 +83,7 @@ public class CameraControl : MonoBehaviour
         {
             distance -= zoomStep * zoomValue;
             distanceVector = new Vector3(0f, 2f, -distance);
-            this.Rotate(xCursor, yCursor);
+            Rotate(xCursor, yCursor);
         }
     }
 
@@ -100,7 +97,7 @@ public class CameraControl : MonoBehaviour
         {
             distance += zoomStep * -zoomValue;
             distanceVector = new Vector3(0f, 2f, -distance);
-            this.Rotate(xCursor, yCursor);
+            Rotate(xCursor, yCursor);
         }
 
     }
@@ -109,7 +106,7 @@ public class CameraControl : MonoBehaviour
      * Assigns the camera to the charcater moving it as the
      * character moves
      */
-    internal void Follow(Movement player)
+    internal void Follow(Player player)
     {
         transform.parent = player.transform;
         this.player = player;
