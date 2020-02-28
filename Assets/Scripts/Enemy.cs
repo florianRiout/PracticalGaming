@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
@@ -10,8 +11,12 @@ public class Enemy : MonoBehaviour
     public static int MaxHealth { get; set; }
     public static float CurrentHealth { get; set; }
 
+    Outline myScript;
+
     void Start()
     {
+        myScript = gameObject.GetComponent<Outline>();
+        myScript.enabled = false;
         navMesh = GetComponent<NavMeshAgent>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         animatorParameter = GetComponent<Animator>();
@@ -31,5 +36,15 @@ public class Enemy : MonoBehaviour
             animatorParameter.SetBool("isWalking", false);
             navMesh.SetDestination(transform.position);
         }
+    }
+
+    internal void select()
+    {
+        myScript.enabled = true;
+    }
+
+    internal void unselect()
+    {
+        myScript.enabled = false;
     }
 }

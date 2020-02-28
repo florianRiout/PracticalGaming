@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public static GameObject Death { get; set; }
     public static GameObject Target { get; set; }
     public static Camera MainCamera { get; set; }
+    public static Enemy SelectedEnemy { get; set; }
 
     // Start is called before the first frame update
     void Start()
@@ -35,14 +36,34 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
-            Vector2 mousePosition = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-            Ray my_ray = MainCamera.ScreenPointToRay(mousePosition);
-            Debug.DrawRay(my_ray.origin, 100*my_ray.direction);
+            Ray my_ray = MainCamera.ScreenPointToRay(Input.mousePosition);
+            Debug.DrawRay(my_ray.origin, 50 * my_ray.direction);
             if (Physics.Raycast(my_ray, out RaycastHit info_on_hit))
             {
-                print(info_on_hit.collider.name);
-                //if (info_on_hit.collider.name)
+                if (SelectedEnemy != info_on_hit.collider.transform.GetComponentInParent<Enemy>() && info_on_hit.collider.transform.GetComponentInParent<Enemy>() != null)
+                {
+                    if (SelectedEnemy != null)
+                        SelectedEnemy.unselect();
+                    SelectedEnemy = info_on_hit.collider.transform.GetComponentInParent<Enemy>();
+                    SelectedEnemy.select();
+                }
+                else if (info_on_hit.collider.transform.GetComponentInParent<Enemy>() == null)
+                {
+                    if (SelectedEnemy != null)
+                    {
+                        SelectedEnemy.unselect();
+                        SelectedEnemy = null;
+                    }
+                }
             }
-        }
+            else
+            {
+                if (SelectedEnemy != null)
+                {
+                    SelectedEnemy.unselect();
+                    SelectedEnemy = null;
+                }
+            }
+        }               
     }
 }
