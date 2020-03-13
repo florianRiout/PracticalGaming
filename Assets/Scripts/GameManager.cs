@@ -11,10 +11,15 @@ public class GameManager : MonoBehaviour
     public static GameObject Target { get; set; }
     public static Camera MainCamera { get; set; }
     public static Enemy SelectedEnemy { get; set; }
+    public static bool isTap { get; set; }
+
+    float timer;
 
     // Start is called before the first frame update
     void Start()
     {
+        isTap = true;
+        timer = 0;
         MainCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         Player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         Enemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -36,34 +41,48 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
+            timer += Time.deltaTime;
+            if (timer >= 0.1f)
+            {
+                isTap = false;
+            }
             Ray my_ray = MainCamera.ScreenPointToRay(Input.mousePosition);
             Debug.DrawRay(my_ray.origin, 50 * my_ray.direction);
-            if (Physics.Raycast(my_ray, out RaycastHit info_on_hit))
+            if (isTap)
             {
-                if (SelectedEnemy != info_on_hit.collider.transform.GetComponentInParent<Enemy>() && info_on_hit.collider.transform.GetComponentInParent<Enemy>() != null)
+                if (Physics.Raycast(my_ray, out RaycastHit info_on_hit))
                 {
-                    if (SelectedEnemy != null)
-                        SelectedEnemy.unselect();
-                    SelectedEnemy = info_on_hit.collider.transform.GetComponentInParent<Enemy>();
-                    SelectedEnemy.select();
+                    if (SelectedEnemy != info_on_hit.collider.transform.GetComponentInParent<Enemy>() && info_on_hit.collider.transform.GetComponentInParent<Enemy>() != null)
+                    {
+                        if (SelectedEnemy != null)
+                            SelectedEnemy.Unselect();
+                        SelectedEnemy = info_on_hit.collider.transform.GetComponentInParent<Enemy>();
+                        SelectedEnemy.Select();
+                    }
+                    else if (info_on_hit.collider.transform.GetComponentInParent<Enemy>() == null)
+                    {
+                        if (SelectedEnemy != null)
+                        {
+                            SelectedEnemy.Unselect();
+                            SelectedEnemy = null;
+                        }
+                    }
                 }
-                else if (info_on_hit.collider.transform.GetComponentInParent<Enemy>() == null)
+                else
                 {
                     if (SelectedEnemy != null)
                     {
-                        SelectedEnemy.unselect();
+                        SelectedEnemy.Unselect();
                         SelectedEnemy = null;
                     }
                 }
             }
-            else
-            {
-                if (SelectedEnemy != null)
-                {
-                    SelectedEnemy.unselect();
-                    SelectedEnemy = null;
-                }
-            }
-        }               
+                
+        }
+        else
+        {
+            timer = 0;
+            isTap = true;
+        }
     }
 }

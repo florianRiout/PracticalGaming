@@ -6,7 +6,7 @@ public class CameraControl : MonoBehaviour
     private float distance = 5.0f;
     private float minDistance = 1.0f;
     private float maxDistance = 20.0f;
-    public float zoomStep = 10000f;
+    public float zoomStep = 0.000000001f;
     public float xCursor = 0f;
     public float yCursor = 2f;
     private Vector3 distanceVector;
@@ -47,11 +47,11 @@ public class CameraControl : MonoBehaviour
         //mouse wheel
         if (Input.GetAxis("Mouse ScrollWheel") < 0.0f)
         {
-            ZoomOut(Input.GetAxis("Mouse ScrollWheel"));
+            ZoomOut(Input.GetAxis("Mouse ScrollWheel")/ 1000);
         }
         else if (Input.GetAxis("Mouse ScrollWheel") > 0.0f)
         {
-            ZoomIn(Input.GetAxis("Mouse ScrollWheel"));
+            ZoomIn(Input.GetAxis("Mouse ScrollWheel")/1000);
         }
     }
 

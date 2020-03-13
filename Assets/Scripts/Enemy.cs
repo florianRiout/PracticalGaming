@@ -8,8 +8,8 @@ public class Enemy : MonoBehaviour
     private Transform player;
     Animator animatorParameter;
 
-    public static int MaxHealth { get; set; }
-    public static float CurrentHealth { get; set; }
+    private int maxHealth;
+    private float currentHealth;
 
     Outline myScript;
 
@@ -18,10 +18,10 @@ public class Enemy : MonoBehaviour
         myScript = gameObject.GetComponent<Outline>();
         myScript.enabled = false;
         navMesh = GetComponent<NavMeshAgent>();
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        player = GameManager.Player.transform;
         animatorParameter = GetComponent<Animator>();
-        MaxHealth = 2500;
-        CurrentHealth = MaxHealth;
+        maxHealth = 2500;
+        currentHealth = maxHealth;
     }
 
     void Update()
@@ -38,13 +38,23 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    internal void select()
+    internal void Select()
     {
         myScript.enabled = true;
     }
 
-    internal void unselect()
+    internal void Unselect()
     {
         myScript.enabled = false;
+    }
+
+    public int GetMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    public float GetCurrentHealth()
+    {
+        return currentHealth;
     }
 }
