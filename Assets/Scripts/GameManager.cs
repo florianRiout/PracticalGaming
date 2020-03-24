@@ -26,12 +26,20 @@ public class GameManager : MonoBehaviour
         Menus = GameObject.FindGameObjectsWithTag("Menu");
         for(int i = 0; i < Menus.Length; i++)
         {
-            Menus[i].gameObject.SetActive(false);
-            if (Menus[i].name.Equals("Death"))
+            if (Menus[i].name.Equals("Start"))
             {
-                Death = Menus[i];
-                Revive = Menus[i].GetComponentInChildren<Button>();
+
             }
+            else
+            {
+                Menus[i].gameObject.SetActive(false);
+                if (Menus[i].name.Equals("Death"))
+                {
+                    Death = Menus[i];
+                    Revive = Menus[i].GetComponentInChildren<Button>();
+                }
+            }
+            
         }
         Revive.onClick.AddListener(Player.Respawn);
     }

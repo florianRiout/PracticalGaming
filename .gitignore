@@ -60,3 +60,5 @@ crashlytics-build.properties
 
 #MacFile
 .DS_Store
+
+Build.app/*
