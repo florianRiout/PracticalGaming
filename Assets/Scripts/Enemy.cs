@@ -2,16 +2,15 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : HealthSystem
 {
     private NavMeshAgent navMesh;
     private Transform player;
     Animator animatorParameter;
 
-    private int maxHealth;
-    private float currentHealth;
-
     Outline myScript;
+
+    public GameObject potionPrefab;
 
     void Start()
     {
@@ -20,8 +19,8 @@ public class Enemy : MonoBehaviour
         navMesh = GetComponent<NavMeshAgent>();
         player = GameManager.Player.transform;
         animatorParameter = GetComponent<Animator>();
-        maxHealth = 2500;
-        currentHealth = maxHealth;
+        MaxHealth = 2500;
+        CurrentHealth = MaxHealth;
     }
 
     void Update()
@@ -36,6 +35,11 @@ public class Enemy : MonoBehaviour
             animatorParameter.SetBool("isWalking", false);
             navMesh.SetDestination(transform.position);
         }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            Die();
+        }
     }
 
     internal void Select()
@@ -48,13 +52,12 @@ public class Enemy : MonoBehaviour
         myScript.enabled = false;
     }
 
-    public int GetMaxHealth()
+    private void Die()
     {
-        return maxHealth;
-    }
+        GameObject pot = Instantiate(potionPrefab) as GameObject;
+        pot.transform.position = this.transform.position;
+        GameManager.Items.Add(pot);
 
-    public float GetCurrentHealth()
-    {
-        return currentHealth;
+        Destroy(this.gameObject);
     }
 }

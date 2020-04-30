@@ -1,17 +1,15 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class Player : MonoBehaviour
+public class Player : HealthSystem
 {
-    private float currentSpeed = 1;
+    private float currentSpeed = 4;
     private float jumpForce = 400;
     private float turningSpeed = 100f;
     CameraControl myCamera;
     Animator animatorParameter;
-    private new Rigidbody rigidbody;
-
-    public static int MaxHealth { get; set; }
-    public static float CurrentHealth { get; set; }
-    public static float HealthPerSec { get; set; }
+    private Rigidbody rigidbody;
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +21,7 @@ public class Player : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         myCamera = FindObjectOfType<CameraControl>();
         myCamera.Follow(this);
+        this.transform.position = GameObject.FindGameObjectWithTag("Respawn").transform.position;
     }
 
     // Update is called once per frame
@@ -37,7 +36,33 @@ public class Player : MonoBehaviour
 
         CurrentHealth += HealthPerSec * Time.deltaTime;
         if (CurrentHealth > MaxHealth)
+        {
             CurrentHealth = MaxHealth;
+        }
+
+        if (CurrentHealth <= 0)
+        {
+            CurrentHealth = 0;
+            HealthPerSec = 0;
+            Die();
+        }
+
+        if (ShouldUsePotion()) UsePotion();
+    }
+
+    private bool ShouldUsePotion()
+    {
+        return Input.GetKeyDown(KeyCode.P);
+    }
+
+    private void UsePotion()
+    {
+        if(GameManager.Potions.Count > 0)
+        {
+            Potion p = (Potion)GameManager.Potions[0];
+            p.Use();
+            GameManager.Potions.Remove(p);
+        }
     }
 
     void OnCollisionEnter(Collision c)
@@ -46,12 +71,39 @@ public class Player : MonoBehaviour
             animatorParameter.SetBool("isJumping", false);
 
         if (c.collider.gameObject.CompareTag("Enemy"))
-            CurrentHealth -= 100;
-        if (CurrentHealth <= 0)
         {
-            CurrentHealth = 0;
-            HealthPerSec = 0;
-            Die();
+            CurrentHealth -= 100;
+        }
+
+        if (c.collider.gameObject.CompareTag("Building") || c.collider.gameObject.TryGetComponent<IInteractable>(out _))
+        {
+            GameManager.Message.text = "press E to interact";
+        }
+    }
+
+    void OnCollisionStay(Collision c)
+    {
+        if(c.collider.gameObject.CompareTag("Building"))
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                c.gameObject.GetComponentInParent<Building>().Interact();
+            }
+        }
+        else if(c.collider.gameObject.TryGetComponent<IInteractable>(out _))
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                c.gameObject.GetComponentInParent<IInteractable>().Interact();
+            }
+        }
+    }
+
+    void OnCollisionExit(Collision c)
+    {
+        if(c.collider.gameObject.CompareTag("Building") || c.collider.gameObject.TryGetComponent<IInteractable>(out _))
+        {
+            GameManager.Message.text = "";
         }
     }
 
@@ -65,7 +117,7 @@ public class Player : MonoBehaviour
 
     private bool ShouldJump()
     {
-        return Input.GetKey(KeyCode.Space) && !animatorParameter.GetBool("isJumping");
+        return Input.GetKeyDown(KeyCode.Space) && !animatorParameter.GetBool("isJumping");
     }
 
     private void Idle()
@@ -83,7 +135,7 @@ public class Player : MonoBehaviour
     {
         if (!animatorParameter.GetBool("isJumping"))
             animatorParameter.SetBool("isWalkingBackward", true);
-        transform.position -= currentSpeed * transform.forward * Time.deltaTime;
+        transform.position -= currentSpeed / 2 * transform.forward * Time.deltaTime;
     }
 
     private bool ShouldWalkBackward()
@@ -128,16 +180,15 @@ public class Player : MonoBehaviour
     public void Die()
     {
         animatorParameter.SetTrigger("die");
-        GameManager.Death.gameObject.SetActive(true);
         Time.timeScale = 0;
+        GameManager.Death.SetActive(true);
     }
 
     public void Respawn()
     {
-        Start();
-        Time.timeScale = 1;
         animatorParameter.ResetTrigger("die");
-        GameManager.Death.gameObject.SetActive(false);
-        transform.position = GameObject.FindGameObjectWithTag("Respawn").transform.position;
+        transform.position = GameManager.Spawn.transform.position;
+        GameManager.Death.SetActive(false);
+        Time.timeScale = 1;
     }
 }

@@ -7,7 +7,7 @@ public class StartMenu : MonoBehaviour
 {
     public void NewGame()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadSceneAsync("Game");
     }
 
     public void LoadGame()

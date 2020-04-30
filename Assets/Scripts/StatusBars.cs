@@ -18,8 +18,8 @@ public class StatusBars : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        maxHealth = Player.MaxHealth;
-        currentHealth = Player.CurrentHealth;
+        maxHealth = GameManager.Player.GetMaxHealth();
+        currentHealth = GameManager.Player.GetCurrentHealth();
         health.fillAmount = currentHealth / maxHealth;
         healthText.text = (int)currentHealth + " HP";
     }
