@@ -6,8 +6,8 @@ List of things implemented :
 - List of Objects (Inventories and lists of enemies etc in the GameManager)
 - GameManager
 - MultiScenes
-- Abstract classes
-- Interfaces and polymorphism
+- Abstract classes (no abstract methods)
+- Interfaces
 - Animated Cabin (door opening and closing)
 - Minimap
 - Health system (auto-regenerating and potions)
